@@ -1,0 +1,49 @@
+{
+  "type": "record",
+  "name": "MovieWatchEvent",
+  "namespace": "movie_click_events",
+  "fields": [
+    {
+      "name": "row_id",
+      "type": "long"
+    },
+    {
+      "name": "datetime",
+      "type": {
+        "type": "long",
+        "logicalType": "timestamp-millis"
+      }
+    },
+    {
+      "name": "duration",
+      "type": "double"
+    },
+    {
+      "name": "title",
+      "type": "string"
+    },
+    {
+      "name": "genres",
+      "type": {
+        "type": "array",
+        "items": "string"
+      }
+    },
+    {
+      "name": "release_date",
+      "type": {
+        "type": "int",
+        "logicalType": "date"
+      }
+    },
+    {
+      "name": "movie_id",
+      "type": "string"
+    },
+    {
+      "name": "user_id",
+      "type": "string"
+    }
+  ]
+}
+

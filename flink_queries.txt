@@ -1,0 +1,46 @@
+# Average watch duration per movie title, converted to minutes to make it more intuitive
+SELECT
+  title,
+  AVG(duration) / 60 AS avg_watch_duration_minutes
+FROM movie_watch_events
+GROUP BY title;
+
+# The daily view counts and total watch time by title requires window-based approach
+# The window function requires a time attribute and won't work with the default table created because the datetime is not a watermark
+
+# We first create a table with the timestamp cast as a watermark timestamp
+CREATE TABLE movie_watch_events_with_watermark (
+  row_id BIGINT,
+  event_time TIMESTAMP(3),
+  duration DOUBLE,
+  title STRING,
+  genres ARRAY<STRING>,
+  release_date DATE,
+  movie_id STRING,
+  user_id STRING,
+  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+)
+
+# Now we populate the table from the default table and ensure that things are properly cast
+INSERT INTO movie_watch_events_with_watermark
+SELECT
+  row_id,
+  CAST(datetime AS TIMESTAMP(3)) AS event_time,
+  duration,
+  title,
+  genres,
+  release_date,
+  movie_id,
+  user_id
+FROM movie_watch_events;
+
+# Finally, we can select the daily view counts and total watch time for each movie title using the following query.
+# I've also put the total watch time in minutes again rather than seconds as it feels more intuitive.
+SELECT
+  window_start AS event_date,
+  title,
+  COUNT(*) AS daily_view_count,
+  SUM(duration) / 60 AS total_watch_time_in_minutes
+FROM TABLE(
+  TUMBLE(TABLE movie_watch_events_with_watermark, DESCRIPTOR(event_time), INTERVAL '1' DAY)
+)
