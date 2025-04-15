@@ -1,7 +1,7 @@
-# Average watch duration per movie title, converted to minutes to make it more intuitive
+# Average watch duration per movie title
 SELECT
   title,
-  AVG(duration) / 60 AS avg_watch_duration_minutes
+  AVG(duration) AS avg_watch_duration
 FROM movie_watch_events
 GROUP BY title;
 
@@ -35,12 +35,11 @@ SELECT
 FROM movie_watch_events;
 
 # Finally, we can select the daily view counts and total watch time for each movie title using the following query.
-# I've also put the total watch time in minutes again rather than seconds as it feels more intuitive.
 SELECT
   window_start AS event_date,
   title,
   COUNT(*) AS daily_view_count,
-  SUM(duration) / 60 AS total_watch_time_in_minutes
+  SUM(duration) AS total_watch_time_in_minutes
 FROM TABLE(
   TUMBLE(TABLE movie_watch_events_with_watermark, DESCRIPTOR(event_time), INTERVAL '1' DAY)
 )
