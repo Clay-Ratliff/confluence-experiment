@@ -18,7 +18,7 @@ CREATE TABLE movie_watch_events_with_watermark (
   release_date DATE,
   movie_id STRING,
   user_id STRING,
-  WATERMARK FOR event_time AS event_time - INTERVAL '5' SECOND
+  WATERMARK FOR event_time AS event_time - INTERVAL '1' SECOND
 )
 
 # Now we populate the table from the default table and ensure that things are properly cast
